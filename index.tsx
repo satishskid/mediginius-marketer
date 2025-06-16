@@ -6,8 +6,8 @@ import './index.css';
 import App from './App';
 import { ClerkProvider } from "@clerk/clerk-react";
 
-// IMPORTANT: Get Clerk Publishable Key from environment variable or fallback
-const PUBLISHABLE_KEY = 'pk_test_Zmxvd2luZy13aWxkY2F0LTY2LmNsZXJrLmFjY291bnRzLmRldiQ';
+// IMPORTANT: Get Clerk Publishable Key from environment variable
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
   console.error(

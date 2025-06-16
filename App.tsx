@@ -10,7 +10,7 @@ import { generateContentWithGemini, generateImageWithImagen, checkDefaultGeminiE
 import { generateMockContent } from './services/mockApiService';
 import { Spinner } from './components/ui/Spinner';
 import { AlertTriangle, Info } from 'lucide-react';
-import { SignedIn, SignedOut, UserButton, useAuth, SignIn, SignUp, RedirectToSignIn } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, UserButton, useAuth, SignIn } from "@clerk/clerk-react";
 
 const AppContent: React.FC = () => {
   const [apiKeys, setApiKeys] = useState<ApiKeys>(DEFAULT_API_KEYS);
@@ -271,40 +271,18 @@ const AppContent: React.FC = () => {
 
 
 const App: React.FC = () => {
-  const [route, setRoute] = useState(window.location.hash || '#/');
-
-  useEffect(() => {
-    const handleHashChange = () => {
-      setRoute(window.location.hash || '#/');
-    };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-  
-  let CurrentPage;
-  switch (route) {
-    case '#/sign-in':
-      CurrentPage = () => <div className="flex justify-center items-center min-h-screen p-4"><SignIn path="/sign-in" routing="hash" signUpPath="/sign-up" redirectUrl="#/" /></div>;
-      break;
-    case '#/sign-up':
-      CurrentPage = () => <div className="flex justify-center items-center min-h-screen p-4"><SignUp path="/sign-up" routing="hash" signInPath="/sign-in" redirectUrl="#/" /></div>;
-      break;
-    case '#/':
-    default:
-      CurrentPage = () => (
-        <>
-          <SignedIn>
-            <AppContent />
-          </SignedIn>
-          <SignedOut>
-             {/* This will redirect to #/sign-in because of the path prop on SignIn */}
-             <RedirectToSignIn redirectUrl="#/sign-in" />
-          </SignedOut>
-        </>
-      );
-  }
-  
-  return <CurrentPage />;
+  return (
+    <>
+      <SignedIn>
+        <AppContent />
+      </SignedIn>
+      <SignedOut>
+        <div className="flex justify-center items-center min-h-screen p-4">
+          <SignIn />
+        </div>
+      </SignedOut>
+    </>
+  );
 };
 
 export default App;
