@@ -7,9 +7,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      font-family: 'Inter', sans-serif; /* A nice default sans-serif font */
+      font-family: 'Inter', sans-serif;
     }
-    /* Custom scrollbar for better aesthetics */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -29,61 +28,9 @@
       display: none;
     }
   </style>
-<script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.1.0/",
-    "react": "https://esm.sh/react@^19.1.0",
-    "react-dom/client": "https://esm.sh/react-dom@^19.1.0/client",
-    "@google/genai": "https://esm.sh/@google/genai@^1.5.1",
-    "lucide-react": "https://esm.sh/lucide-react@^0.515.0",
-    "@clerk/clerk-react": "https://esm.sh/@clerk/clerk-react@^5",
-    "swr": "https://esm.sh/swr@^2",
-    "react-dom/": "https://esm.sh/react-dom@^19.1.0/"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body class="bg-slate-50 text-slate-800">
   <div id="root"></div>
-  <script type="module">
-    // IMPORTANT: REPLACE 'YOUR_CLERK_PUBLISHABLE_KEY' WITH YOUR ACTUAL CLERK PUBLISHABLE KEY
-    const ClerkPublishableKey = 'pk_test_Zmxvd2luZy13aWxkY2F0LTY2LmNsZXJrLmFjY291bnRzLmRldiQ'; 
-
-    if (ClerkPublishableKey === 'YOUR_CLERK_PUBLISHABLE_KEY') {
-      console.warn("Clerk Publishable Key is a placeholder. Please replace 'YOUR_CLERK_PUBLISHABLE_KEY' in index.html with your actual key from dashboard.clerk.com.");
-    }
-    
-    const script = document.createElement('script');
-    script.setAttribute('data-clerk-publishable-key', ClerkPublishableKey);
-    script.async = true;
-    // Ensure you are using a version of clerk.browser.js that supports this manual loading pattern if needed.
-    // The latest version should generally work.
-    script.src = `https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
-    script.crossOrigin = "anonymous";
-
-    script.addEventListener('load', () => {
-      // This event fires when the script file has been loaded and executed.
-      // window.Clerk should be available now.
-      if (window.Clerk) {
-        window.Clerk.load() // This initializes Clerk and loads necessary resources.
-          .then(() => {
-            // Clerk is fully initialized and ready.
-            document.dispatchEvent(new CustomEvent('clerk-loaded'));
-          })
-          .catch(err => {
-            console.error("Error during window.Clerk.load():", err);
-          });
-      } else {
-        console.error("ClerkJS script loaded, but window.Clerk is not defined.");
-      }
-    });
-    script.addEventListener('error', () => {
-        console.error("Failed to load ClerkJS script.");
-    });
-    document.head.appendChild(script);
-  </script>
   <script type="module" src="/index.tsx"></script>
 </body>
 </html>
