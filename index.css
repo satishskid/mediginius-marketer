@@ -34,6 +34,54 @@ body {
   background: linear-gradient(90deg, #38bdf8, #06b6d4, #14b8a6) !important;
 }
 
+/* Improve text readability */
+.text-slate-300 {
+  color: #e2e8f0 !important;
+  font-weight: 500 !important;
+}
+
+.text-slate-400 {
+  color: #cbd5e1 !important;
+  font-weight: 500 !important;
+}
+
+.text-blue-100 {
+  color: #dbeafe !important;
+  font-weight: 500 !important;
+}
+
+.text-blue-200 {
+  color: #bfdbfe !important;
+  font-weight: 600 !important;
+}
+
+.text-blue-300 {
+  color: #93c5fd !important;
+  font-weight: 600 !important;
+}
+
+.text-sky-300 {
+  color: #7dd3fc !important;
+  font-weight: 600 !important;
+}
+
+.text-cyan-300 {
+  color: #67e8f9 !important;
+  font-weight: 600 !important;
+}
+
+.text-orange-200 {
+  color: #fed7aa !important;
+  font-weight: 500 !important;
+}
+
+/* Better contrast for intro section */
+.intro-section {
+  background: rgba(14, 165, 233, 0.15) !important;
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
 /* Custom scrollbar for better aesthetics */
 ::-webkit-scrollbar {
   width: 8px;

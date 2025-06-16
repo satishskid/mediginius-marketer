@@ -197,7 +197,7 @@ const AppContent: React.FC = () => {
       </header>
 
       {/* Introductory Section */}
-      <div className="w-full max-w-4xl mb-8 p-8 bg-gradient-to-r from-sky-500/10 via-cyan-500/10 to-teal-500/10 border border-sky-400/30 rounded-2xl backdrop-blur-sm">
+      <div className="w-full max-w-4xl mb-8 p-8 intro-section rounded-2xl backdrop-blur-sm">
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-teal-300 mb-4">
             🩺 Welcome to MediGenius AI
