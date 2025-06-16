@@ -1,0 +1,5 @@
+{
+  "name": "MediGenius: AI Healthcare Marketing Assistant",
+  "description": "MediGenius is a web application for Indian healthcare marketers to generate specialized marketing content using AI. It leverages a Bring Your Own Key (BYOK) model for various AI APIs, with a primary focus on Google Gemini for high-quality text generation.",
+  "requestFramePermissions": []
+}

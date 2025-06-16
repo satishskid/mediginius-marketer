@@ -1,0 +1,18 @@
+
+import React from 'react';
+
+interface CardProps {
+  title?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+  titleClassName?: string;
+}
+
+export const Card: React.FC<CardProps> = ({ title, children, className, titleClassName }) => {
+  return (
+    <div className={`bg-slate-800/70 p-6 rounded-xl shadow-xl border border-slate-700 ${className}`}>
+      {title && <h3 className={`text-xl font-semibold text-sky-300 mb-4 ${titleClassName}`}>{title}</h3>}
+      {children}
+    </div>
+  );
+};
