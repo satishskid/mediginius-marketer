@@ -189,17 +189,20 @@ const AppContent: React.FC = () => {
             {APP_NAME}
           </h1>
           <p className="mt-2 text-slate-400 text-lg">AI-Powered Content for Indian Healthcare Marketers</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Powered by <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-300 font-semibold">GreyBrain.ai</span>
+          </p>
         </div>
         <UserButton afterSignOutUrl={window.location.href} />
       </header>
 
       {!isDefaultGeminiEnvKeyAvailable && !apiKeys.geminiApiKey && ( // Show only if no default AND no user-provided Gemini key
-        <div className="w-full max-w-3xl p-6 mb-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/30 text-blue-100 rounded-xl flex items-start">
+        <div className="w-full max-w-3xl p-6 mb-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/30 text-blue-100 rounded-xl flex items-start backdrop-blur-sm">
           <Info className="h-6 w-6 mr-3 mt-1 text-blue-400 shrink-0" />
           <div>
-            <h3 className="font-semibold text-blue-300 mb-2">🚀 Get Started with AI Content Generation</h3>
+            <h3 className="font-semibold text-blue-300 mb-2">🚀 Welcome to MediGenius!</h3>
             <p className="text-sm leading-relaxed">
-              Welcome to MediGenius! To unlock the full power of AI-generated medical marketing content, simply add your Google Gemini API key. 
+              Get started with AI-powered medical marketing content by adding your Google Gemini API key. 
               <span className="block mt-2 text-blue-200">
                 ✨ <strong>Coming Soon:</strong> Premium plans with no API key required - just sign up and create!
               </span>
@@ -236,10 +239,10 @@ const AppContent: React.FC = () => {
                 </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="md:col-span-2 bg-slate-800/50 p-6 rounded-xl shadow-2xl border border-slate-700">
+              <div className="md:col-span-2 bg-slate-800/50 p-6 rounded-xl shadow-2xl border border-slate-700 backdrop-blur-sm">
                 <GeneratorForm onSubmit={handleGenerateContent} isLoading={isLoading} />
               </div>
-              <div className="md:col-span-1 bg-slate-800/50 p-6 rounded-xl shadow-2xl border border-slate-700">
+              <div className="md:col-span-1 bg-slate-800/50 p-6 rounded-xl shadow-2xl border border-slate-700 backdrop-blur-sm">
                 <Planner />
               </div>
             </div>
@@ -263,7 +266,12 @@ const AppContent: React.FC = () => {
           <Info className="h-5 w-5 mr-3 mt-0.5 text-sky-400 shrink-0" />
           <p>{MEDICAL_DISCLAIMER}</p>
         </div>
-        <p>&copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved (concept).</p>
+        <div className="flex flex-col items-center space-y-2">
+          <p>&copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
+          <p className="text-xs text-slate-600">
+            Built with ❤️ by <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-300 font-semibold">GreyBrain.ai</span>
+          </p>
+        </div>
       </footer>
     </div>
   );
@@ -277,8 +285,33 @@ const App: React.FC = () => {
         <AppContent />
       </SignedIn>
       <SignedOut>
-        <div className="flex justify-center items-center min-h-screen p-4">
-          <SignIn />
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 flex flex-col justify-center items-center p-4">
+          <div className="text-center mb-8">
+            <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-400 mb-4">
+              MediGenius
+            </h1>
+            <p className="text-slate-400 text-lg mb-2">AI-Powered Content for Indian Healthcare Marketers</p>
+            <p className="text-xs text-slate-500">
+              Powered by <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-300 font-semibold">GreyBrain.ai</span>
+            </p>
+          </div>
+          <div className="w-full max-w-md">
+            <SignIn 
+              appearance={{
+                elements: {
+                  formButtonPrimary: 'bg-sky-600 hover:bg-sky-500 text-white',
+                  card: 'bg-slate-800/50 border border-slate-700 shadow-2xl',
+                  headerTitle: 'text-slate-100',
+                  headerSubtitle: 'text-slate-400',
+                  socialButtonsBlockButton: 'bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600',
+                  formFieldInput: 'bg-slate-700 border-slate-600 text-slate-100',
+                  formFieldLabel: 'text-slate-300',
+                  identityPreviewText: 'text-slate-300',
+                  formButtonReset: 'text-sky-400 hover:text-sky-300'
+                }
+              }}
+            />
+          </div>
         </div>
       </SignedOut>
     </>
