@@ -189,8 +189,8 @@ const AppContent: React.FC = () => {
             {APP_NAME}
           </h1>
           <p className="mt-2 text-slate-400 text-lg">AI-Powered Content for Indian Healthcare Marketers</p>
-          <p className="mt-1 text-xs text-slate-500">
-            Powered by <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-300 font-semibold">GreyBrain.ai</span>
+          <p className="mt-1 text-xs text-slate-400">
+            Powered by <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 font-semibold">GreyBrain.ai</span>
           </p>
         </div>
         <UserButton afterSignOutUrl={window.location.href} />
@@ -268,8 +268,8 @@ const AppContent: React.FC = () => {
         </div>
         <div className="flex flex-col items-center space-y-2">
           <p>&copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
-          <p className="text-xs text-slate-600">
-            Built with ❤️ by <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-300 font-semibold">GreyBrain.ai</span>
+          <p className="text-xs text-slate-500">
+            Built with ❤️ by <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 font-semibold">GreyBrain.ai</span>
           </p>
         </div>
       </footer>
@@ -291,8 +291,8 @@ const App: React.FC = () => {
               MediGenius
             </h1>
             <p className="text-slate-400 text-lg mb-2">AI-Powered Content for Indian Healthcare Marketers</p>
-            <p className="text-xs text-slate-500">
-              Powered by <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-300 font-semibold">GreyBrain.ai</span>
+            <p className="text-xs text-slate-400">
+              Powered by <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 font-semibold">GreyBrain.ai</span>
             </p>
           </div>
           <div className="w-full max-w-md">

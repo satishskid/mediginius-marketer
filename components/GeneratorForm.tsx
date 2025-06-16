@@ -24,13 +24,6 @@ export const GeneratorForm: React.FC<GeneratorFormProps> = ({ onSubmit, isLoadin
     setParams({ ...params, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setParams({ ...params, imageFile: file });
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Basic validation for required fields
@@ -90,14 +83,6 @@ export const GeneratorForm: React.FC<GeneratorFormProps> = ({ onSubmit, isLoadin
           onChange={handleChange}
           placeholder="e.g., Celebratory, Informative, Empathetic, Urgent"
           containerClassName="mt-1"
-        />
-        <Input
-          label="Upload Image (for Medical Image Analysis)"
-          name="imageFile"
-          type="file"
-          onChange={handleImageChange}
-          containerClassName="mt-1"
-          accept="image/*"
         />
         <div className="pt-3">
           <Button type="submit" isLoading={isLoading} className="w-full" size="lg">
