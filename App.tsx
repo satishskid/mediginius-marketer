@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { ApiKeys, ContentGenerationParams, GeneratedContentSet, ChannelType } from './types';
 import { APP_NAME, MEDICAL_DISCLAIMER, DEFAULT_API_KEYS, API_KEY_STORAGE_KEY, CHANNEL_OPTIONS } from './constants';
@@ -197,7 +196,7 @@ const AppContent: React.FC = () => {
       </header>
 
       {/* Introductory Section */}
-      <div className="w-full max-w-4xl mb-8 p-8 intro-section rounded-2xl backdrop-blur-sm">
+      <div className="w-full max-w-4xl mb-8 p-8 border border-slate-600/30 rounded-2xl backdrop-blur-sm">
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-teal-300 mb-4">
             🩺 Welcome to MediGenius AI
@@ -229,10 +228,10 @@ const AppContent: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-gradient-to-r from-orange-500/10 to-yellow-500/10 border border-orange-400/30 rounded-lg p-4 text-center">
-          <p className="text-sm text-orange-200">
-            ✨ <strong>Premium Plans Coming Soon:</strong> No API keys required, advanced templates, scheduling integration, and priority support!
-            <span className="block mt-1 text-xs text-orange-300">
+        <div className="border border-slate-500/30 rounded-lg p-4 text-center">
+          <p className="text-sm text-slate-200">
+            ✨ <strong className="text-white">Premium Plans Coming Soon:</strong> No API keys required, advanced templates, scheduling integration, and priority support!
+            <span className="block mt-1 text-xs text-slate-300">
               Want early access? Update your API keys now and get notified when premium features launch.
             </span>
           </p>
@@ -240,14 +239,14 @@ const AppContent: React.FC = () => {
       </div>
 
       {!isDefaultGeminiEnvKeyAvailable && !apiKeys.geminiApiKey && ( // Show only if no default AND no user-provided Gemini key
-        <div className="w-full max-w-3xl p-6 mb-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/30 text-blue-100 rounded-xl flex items-start backdrop-blur-sm">
-          <Info className="h-6 w-6 mr-3 mt-1 text-blue-400 shrink-0" />
+        <div className="w-full max-w-3xl p-6 mb-6 border border-slate-600/30 rounded-xl flex items-start backdrop-blur-sm">
+          <Info className="h-6 w-6 mr-3 mt-1 text-sky-400 shrink-0" />
           <div>
-            <h3 className="font-semibold text-blue-300 mb-2">� Quick API Setup</h3>
-            <p className="text-sm leading-relaxed">
+            <h3 className="font-semibold text-white mb-2">🔑 Quick API Setup</h3>
+            <p className="text-sm leading-relaxed text-slate-200">
               Get your free Google Gemini API key to start generating professional medical marketing content. 
-              <span className="block mt-2 text-blue-200">
-                📱 <strong>Need help?</strong> <a href="https://aistudio.google.com" target="_blank" className="underline hover:text-blue-100 transition-colors">Get your key here</a> - it's completely free!
+              <span className="block mt-2 text-slate-300">
+                📱 <strong className="text-white">Need help?</strong> <a href="https://aistudio.google.com" target="_blank" className="underline hover:text-sky-300 transition-colors text-sky-400">Get your key here</a> - it's completely free!
               </span>
             </p>
           </div>
@@ -308,9 +307,9 @@ const AppContent: React.FC = () => {
       </main>
 
       <footer className="w-full max-w-5xl mt-12 py-6 text-center text-slate-500">
-        <div className="p-4 mb-6 bg-sky-800/30 border border-sky-700 rounded-lg text-sm flex items-start">
+        <div className="p-4 mb-6 border border-slate-600/30 rounded-lg text-sm flex items-start backdrop-blur-sm">
           <Info className="h-5 w-5 mr-3 mt-0.5 text-sky-400 shrink-0" />
-          <p>{MEDICAL_DISCLAIMER}</p>
+          <p className="text-slate-300">{MEDICAL_DISCLAIMER}</p>
         </div>
         <div className="flex flex-col items-center space-y-2">
           <p>&copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
