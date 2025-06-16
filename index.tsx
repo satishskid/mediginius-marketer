@@ -7,12 +7,13 @@ import App from './App';
 import { ClerkProvider } from "@clerk/clerk-react";
 
 // IMPORTANT: Get Clerk Publishable Key from environment variable
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_Zmxvd2luZy13aWxkY2F0LTY2LmNsZXJrLmFjY291bnRzLmRldiQ';
 
-if (!PUBLISHABLE_KEY) {
+if (!PUBLISHABLE_KEY || PUBLISHABLE_KEY === 'your_clerk_publishable_key_here') {
   console.error(
-    "Clerk Publishable Key is not set! " +
-    "Please check your environment configuration."
+    "Clerk Publishable Key is not properly configured! " +
+    "Please set VITE_CLERK_PUBLISHABLE_KEY in your environment variables. " +
+    "Current value:", PUBLISHABLE_KEY
   );
 }
 
