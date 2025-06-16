@@ -9,7 +9,7 @@ import { Planner } from './components/Planner';
 import { generateContentWithGemini, generateImageWithImagen, checkDefaultGeminiEnvKey } from './services/geminiService';
 import { generateMockContent } from './services/mockApiService';
 import { Spinner } from './components/ui/Spinner';
-import { AlertTriangle, Info, LogIn } from 'lucide-react';
+import { AlertTriangle, Info } from 'lucide-react';
 import { SignedIn, SignedOut, UserButton, useAuth, SignIn, SignUp, RedirectToSignIn } from "@clerk/clerk-react";
 
 const AppContent: React.FC = () => {
@@ -194,14 +194,15 @@ const AppContent: React.FC = () => {
       </header>
 
       {!isDefaultGeminiEnvKeyAvailable && !apiKeys.geminiApiKey && ( // Show only if no default AND no user-provided Gemini key
-        <div className="w-full max-w-3xl p-4 mb-6 bg-yellow-500/20 border border-yellow-600 text-yellow-200 rounded-lg flex items-start">
-          <AlertTriangle className="h-6 w-6 mr-3 mt-1 text-yellow-400 shrink-0" />
+        <div className="w-full max-w-3xl p-6 mb-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/30 text-blue-100 rounded-xl flex items-start">
+          <Info className="h-6 w-6 mr-3 mt-1 text-blue-400 shrink-0" />
           <div>
-            <h3 className="font-semibold text-yellow-300">Google Gemini API Key Recommended</h3>
-            <p className="text-sm">
-              No default Google API key (API_KEY) was found in the application's environment, and you haven't provided one in the API Wallet.
-              A Gemini key is crucial for generating high-quality text and images. Please provide one in the API Wallet for full functionality.
-              You can still use the app with other API keys (Groq, OpenRouter) for some text content if provided.
+            <h3 className="font-semibold text-blue-300 mb-2">🚀 Get Started with AI Content Generation</h3>
+            <p className="text-sm leading-relaxed">
+              Welcome to MediGenius! To unlock the full power of AI-generated medical marketing content, simply add your Google Gemini API key. 
+              <span className="block mt-2 text-blue-200">
+                ✨ <strong>Coming Soon:</strong> Premium plans with no API key required - just sign up and create!
+              </span>
             </p>
           </div>
         </div>
