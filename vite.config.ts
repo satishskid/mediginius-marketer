@@ -4,6 +4,10 @@ import path from 'path';
 export default defineConfig(({ mode }: { mode: string }) => {
     const env = loadEnv(mode, '.', '');
     return {
+      server: {
+        port: 4343,
+        host: true
+      },
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
