@@ -196,15 +196,58 @@ const AppContent: React.FC = () => {
         <UserButton afterSignOutUrl={window.location.href} />
       </header>
 
+      {/* Introductory Section */}
+      <div className="w-full max-w-4xl mb-8 p-8 bg-gradient-to-r from-sky-500/10 via-cyan-500/10 to-teal-500/10 border border-sky-400/30 rounded-2xl backdrop-blur-sm">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-teal-300 mb-4">
+            🩺 Welcome to MediGenius AI
+          </h2>
+          <p className="text-lg text-slate-300 leading-relaxed">
+            Your intelligent assistant for creating professional healthcare marketing content tailored for Indian medical practices
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-sky-300 flex items-center">
+              <span className="mr-2">🎯</span> What is MediGenius?
+            </h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              MediGenius generates customized marketing content for healthcare professionals across multiple channels - from Instagram posts to Google Business updates, blog ideas to video scripts - all tailored to your medical specialty and local audience.
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-cyan-300 flex items-center">
+              <span className="mr-2">🚀</span> How to Use
+            </h3>
+            <div className="text-slate-400 text-sm space-y-2">
+              <p><span className="text-sky-400 font-medium">1.</span> Add your Google Gemini API key below (free from Google AI Studio)</p>
+              <p><span className="text-sky-400 font-medium">2.</span> Fill in your specialty, location, and target audience</p>
+              <p><span className="text-sky-400 font-medium">3.</span> Get AI-generated content for all major platforms instantly!</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-r from-orange-500/10 to-yellow-500/10 border border-orange-400/30 rounded-lg p-4 text-center">
+          <p className="text-sm text-orange-200">
+            ✨ <strong>Premium Plans Coming Soon:</strong> No API keys required, advanced templates, scheduling integration, and priority support!
+            <span className="block mt-1 text-xs text-orange-300">
+              Want early access? Update your API keys now and get notified when premium features launch.
+            </span>
+          </p>
+        </div>
+      </div>
+
       {!isDefaultGeminiEnvKeyAvailable && !apiKeys.geminiApiKey && ( // Show only if no default AND no user-provided Gemini key
         <div className="w-full max-w-3xl p-6 mb-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/30 text-blue-100 rounded-xl flex items-start backdrop-blur-sm">
           <Info className="h-6 w-6 mr-3 mt-1 text-blue-400 shrink-0" />
           <div>
-            <h3 className="font-semibold text-blue-300 mb-2">🚀 Welcome to MediGenius!</h3>
+            <h3 className="font-semibold text-blue-300 mb-2">� Quick API Setup</h3>
             <p className="text-sm leading-relaxed">
-              Get started with AI-powered medical marketing content by adding your Google Gemini API key. 
+              Get your free Google Gemini API key to start generating professional medical marketing content. 
               <span className="block mt-2 text-blue-200">
-                ✨ <strong>Coming Soon:</strong> Premium plans with no API key required - just sign up and create!
+                📱 <strong>Need help?</strong> <a href="https://aistudio.google.com" target="_blank" className="underline hover:text-blue-100 transition-colors">Get your key here</a> - it's completely free!
               </span>
             </p>
           </div>
@@ -230,7 +273,10 @@ const AppContent: React.FC = () => {
           />
         ) : (
           <>
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center">
+                <div className="text-xs text-slate-500">
+                  💡 <strong>Tip:</strong> Premium plans coming soon - no API keys needed!
+                </div>
                 <button 
                     onClick={resetApiKeySetup} 
                     className="text-sm text-sky-400 hover:text-sky-300 transition-colors"
