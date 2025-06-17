@@ -7,6 +7,7 @@ import { ResultsDisplay } from './components/ResultsDisplay';
 import { Planner } from './components/Planner';
 import { generateContentWithGemini, generateImageWithImagen, checkDefaultGeminiEnvKey } from './services/geminiService';
 import { generateMockContent } from './services/mockApiService';
+import { generateFreeImage, generatePlaceholderImage } from './services/freeImageService';
 import { Spinner } from './components/ui/Spinner';
 import { AlertTriangle, Info } from 'lucide-react';
 import { SignedIn, SignedOut, UserButton, useAuth, SignIn } from "@clerk/clerk-react";
@@ -142,25 +143,68 @@ const AppContent: React.FC = () => {
 
       await Promise.all(textGenerationPromises);
 
-      // Image generation using Imagen (which uses the Gemini key)
-      if (apiKeys.geminiApiKey && results[ChannelType.IMAGE_PROMPT] && !results[ChannelType.IMAGE_PROMPT].error && results[ChannelType.IMAGE_PROMPT].content) {
+      // Image generation with multiple fallbacks
+      if (results[ChannelType.IMAGE_PROMPT] && !results[ChannelType.IMAGE_PROMPT].error && results[ChannelType.IMAGE_PROMPT].content) {
+        const imagePromptText = results[ChannelType.IMAGE_PROMPT].content;
+        let imageBase64: string;
+        let imageGenerationMethod = '';
+        
         try {
-          const imagePromptText = results[ChannelType.IMAGE_PROMPT].content;
-          const imageBase64 = await generateImageWithImagen(imagePromptText, apiKeys.geminiApiKey);
-          results[ChannelType.GENERATED_IMAGE] = { channel: ChannelType.GENERATED_IMAGE, content: imageBase64 };
-        } catch (e: any) {
-          console.error(`Error generating image with Imagen:`, e);
+          // Try Imagen first if Gemini key is available
+          if (apiKeys.geminiApiKey) {
+            try {
+              imageBase64 = await generateImageWithImagen(imagePromptText, apiKeys.geminiApiKey);
+              imageGenerationMethod = 'Google Imagen';
+            } catch (imagenError: any) {
+              console.warn(`Imagen failed, trying free alternatives:`, imagenError);
+              // Fallback to free image generation
+              imageBase64 = await generateFreeImage(imagePromptText, {
+                unsplashKey: apiKeys.unsplashApiKey,
+                preferStock: false,
+                style: 'realistic'
+              });
+              imageGenerationMethod = 'Free AI Generation';
+            }
+          } else {
+            // No Gemini key, use free alternatives directly
+            try {
+              imageBase64 = await generateFreeImage(imagePromptText, {
+                unsplashKey: apiKeys.unsplashApiKey,
+                preferStock: false,
+                style: 'realistic'
+              });
+              imageGenerationMethod = 'Free AI Generation';
+            } catch (freeError: any) {
+              console.warn(`Free image generation failed, using placeholder:`, freeError);
+              // Final fallback: placeholder image
+              imageBase64 = generatePlaceholderImage(imagePromptText);
+              imageGenerationMethod = 'Placeholder';
+            }
+          }
+          
           results[ChannelType.GENERATED_IMAGE] = { 
             channel: ChannelType.GENERATED_IMAGE, 
-            content: 'Image generation failed.', 
-            error: e.message || 'Failed to generate image.' 
+            content: imageBase64,
+            metadata: { generatedBy: imageGenerationMethod }
+          };
+        } catch (e: any) {
+          console.error(`All image generation methods failed:`, e);
+          // Create placeholder as absolute fallback
+          const placeholderBase64 = generatePlaceholderImage(imagePromptText);
+          results[ChannelType.GENERATED_IMAGE] = { 
+            channel: ChannelType.GENERATED_IMAGE, 
+            content: placeholderBase64,
+            error: 'Used placeholder image - consider adding API keys for better image generation',
+            metadata: { generatedBy: 'Placeholder (Fallback)' }
           };
         }
-      } else if (apiKeys.geminiApiKey) { // If Gemini key was there but prompt failed or was empty
+      } else {
+        // No image prompt generated or prompt failed
         results[ChannelType.GENERATED_IMAGE] = { 
           channel: ChannelType.GENERATED_IMAGE, 
-          content: 'Image generation skipped.', 
-          error: results[ChannelType.IMAGE_PROMPT]?.error ? `Skipped due to image prompt error: ${results[ChannelType.IMAGE_PROMPT.toString()].error}` : 'Skipped because image prompt was not generated or Gemini key missing.'
+          content: generatePlaceholderImage('No image prompt available'),
+          error: results[ChannelType.IMAGE_PROMPT]?.error || 'Image prompt was not generated',
+          metadata: { generatedBy: 'Placeholder (No Prompt)' }
         };
       }
       setGeneratedContent(results);
@@ -212,7 +256,7 @@ const AppContent: React.FC = () => {
               <span className="mr-2">🎯</span> What is MediGenius?
             </h3>
             <p className="text-slate-400 text-sm leading-relaxed">
-              MediGenius generates customized marketing content for healthcare professionals across multiple channels - from Instagram posts to Google Business updates, blog ideas to video scripts - all tailored to your medical specialty and local audience.
+              MediGenius generates customized marketing content for healthcare professionals across multiple channels - from Instagram posts to Google Business updates, blog ideas to video scripts and images - all tailored to your medical specialty and local audience. <strong className="text-slate-300">Images are generated for free</strong> using AI, with premium options available.
             </p>
           </div>
           
@@ -221,9 +265,9 @@ const AppContent: React.FC = () => {
               <span className="mr-2">🚀</span> How to Use
             </h3>
             <div className="text-slate-400 text-sm space-y-2">
-              <p><span className="text-sky-400 font-medium">1.</span> Add your Google Gemini API key below (free from Google AI Studio)</p>
+              <p><span className="text-sky-400 font-medium">1.</span> Add your Google Gemini API key below (free from Google AI Studio) - <em className="text-slate-500">optional for basic use</em></p>
               <p><span className="text-sky-400 font-medium">2.</span> Fill in your specialty, location, and target audience</p>
-              <p><span className="text-sky-400 font-medium">3.</span> Get AI-generated content for all major platforms instantly!</p>
+              <p><span className="text-sky-400 font-medium">3.</span> Get AI-generated content + images for all major platforms instantly!</p>
             </div>
           </div>
         </div>

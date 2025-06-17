@@ -4,6 +4,7 @@ export interface ApiKeys {
   groqApiKey: string;
   openRouterApiKey: string;
   stabilityApiKey: string;
+  unsplashApiKey: string; // Optional: for stock photos (free tier: 50 requests/hour)
 }
 
 export interface ContentGenerationParams {
@@ -31,6 +32,7 @@ export interface GeneratedContentItem {
   channel: ChannelType;
   content: string; // For text channels, this is text. For GENERATED_IMAGE, this will be base64 string.
   error?: string;
+  metadata?: { generatedBy?: string; [key: string]: any }; // Optional metadata for tracking generation method
 }
 
 export interface GeneratedContentSet {

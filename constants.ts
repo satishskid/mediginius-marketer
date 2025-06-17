@@ -24,6 +24,7 @@ export const DEFAULT_API_KEYS = {
   groqApiKey: '',
   openRouterApiKey: '',
   stabilityApiKey: '',
+  unsplashApiKey: '', // Optional: for stock photos (free tier: 50 requests/hour)
 };
 
 export const API_KEY_STORAGE_KEY = 'mediGeniusApiKeys';

@@ -95,6 +95,19 @@ export const ApiKeyWallet: React.FC<ApiKeyWalletProps> = ({ onSave, initialKeys,
           placeholder="Enter your Stability AI API key (optional)"
           autoComplete="off"
         />
+        <Input
+          label="📸 Unsplash API Key (Optional, for stock photos - free tier: 50/hour)"
+          type="password"
+          name="unsplashApiKey"
+          value={keys.unsplashApiKey}
+          onChange={handleChange}
+          placeholder="Enter your Unsplash API key (optional)"
+          autoComplete="off"
+        />
+        <div className="p-3 border border-slate-600/30 rounded-lg text-slate-300 text-xs backdrop-blur-sm">
+          <Info className="h-4 w-4 mr-2 mt-0.5 shrink-0 text-sky-400 inline"/>
+          <strong className="text-white">Free Image Generation:</strong> Images can be generated without any API keys using free AI services, though quality may vary. Add Gemini or Unsplash keys for better results.
+        </div>
         <div className="pt-2">
           <Button type="submit" className="w-full bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white font-semibold shadow-lg transition-all duration-200" size="lg">
             🚀 Start Creating Amazing Content
