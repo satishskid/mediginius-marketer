@@ -245,7 +245,7 @@ const AppContent: React.FC = () => {
           <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-teal-300 mb-4">
             🩺 Welcome to MediGenius AI
           </h2>
-          <p className="text-lg text-slate-300 leading-relaxed">
+          <p className="text-lg text-white leading-relaxed font-medium">
             Your intelligent assistant for creating professional healthcare marketing content tailored for Indian medical practices
           </p>
         </div>
@@ -255,8 +255,8 @@ const AppContent: React.FC = () => {
             <h3 className="text-xl font-semibold text-sky-300 flex items-center">
               <span className="mr-2">🎯</span> What is MediGenius?
             </h3>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              MediGenius generates customized marketing content for healthcare professionals across multiple channels - from Instagram posts to Google Business updates, blog ideas to video scripts and images - all tailored to your medical specialty and local audience. <strong className="text-slate-300">Images are generated for free</strong> using AI, with premium options available.
+            <p className="text-slate-300 text-sm leading-relaxed font-medium">
+              MediGenius generates customized marketing content for healthcare professionals across multiple channels - from Instagram posts to Google Business updates, blog ideas to video scripts and images - all tailored to your medical specialty and local audience. <strong className="text-white">Images are generated for free</strong> using AI, with premium options available.
             </p>
           </div>
           
@@ -264,8 +264,8 @@ const AppContent: React.FC = () => {
             <h3 className="text-xl font-semibold text-cyan-300 flex items-center">
               <span className="mr-2">🚀</span> How to Use
             </h3>
-            <div className="text-slate-400 text-sm space-y-2">
-              <p><span className="text-sky-400 font-medium">1.</span> Add your Google Gemini API key below (free from Google AI Studio) - <em className="text-slate-500">optional for basic use</em></p>
+            <div className="text-slate-300 text-sm space-y-2 font-medium">
+              <p><span className="text-sky-400 font-medium">1.</span> Add your Google Gemini API key below (free from Google AI Studio) - <em className="text-slate-400">optional for basic use</em></p>
               <p><span className="text-sky-400 font-medium">2.</span> Fill in your specialty, location, and target audience</p>
               <p><span className="text-sky-400 font-medium">3.</span> Get AI-generated content + images for all major platforms instantly!</p>
             </div>

@@ -75,13 +75,6 @@ body {
   font-weight: 500 !important;
 }
 
-/* Better contrast for intro section */
-.intro-section {
-  background: rgba(14, 165, 233, 0.15) !important;
-  border: 1px solid rgba(56, 189, 248, 0.4) !important;
-  backdrop-filter: blur(8px) !important;
-}
-
 /* Custom scrollbar for better aesthetics */
 ::-webkit-scrollbar {
   width: 8px;
