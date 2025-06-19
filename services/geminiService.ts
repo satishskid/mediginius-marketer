@@ -19,7 +19,7 @@ const initializeGeminiClient = (apiKey: string): GoogleGenAI | null => {
   }
 
   try {
-    activeGeminiClient = new GoogleGenAI({ apiKey });
+    activeGeminiClient = new GoogleGenAI({ apiKey }); // Revert to object format
     activeApiKey = apiKey;
     return activeGeminiClient;
   } catch (error) {
