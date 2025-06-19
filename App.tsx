@@ -5,6 +5,7 @@ import { ApiKeyWallet } from './components/ApiKeyWallet';
 import { GeneratorForm } from './components/GeneratorForm';
 import { ResultsDisplay } from './components/ResultsDisplay';
 import { HelpGuide } from './components/HelpGuide';
+import { ApiStatusChecker } from './components/ApiStatusChecker';
 import { generateContentWithGemini, generateImageWithImagen, checkDefaultGeminiEnvKey } from './services/geminiService';
 import { generateMockContent } from './services/mockApiService';
 import { generateFreeImage, generatePlaceholderImage } from './services/freeImageService';
@@ -16,6 +17,7 @@ const AppContent: React.FC = () => {
   const [apiKeys, setApiKeys] = useState<ApiKeys>(DEFAULT_API_KEYS);
   const [isApiKeySetupDone, setIsApiKeySetupDone] = useState<boolean>(false);
   const [isDefaultGeminiEnvKeyAvailable, setIsDefaultGeminiEnvKeyAvailable] = useState<boolean>(false);
+  const [showApiStatusChecker, setShowApiStatusChecker] = useState<boolean>(false);
   
   const [generatedContent, setGeneratedContent] = useState<GeneratedContentSet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -320,13 +322,27 @@ const AppContent: React.FC = () => {
                 <div className="text-xs text-slate-500">
                   💡 <strong>Tip:</strong> Premium plans coming soon - no API keys needed!
                 </div>
-                <button 
-                    onClick={resetApiKeySetup} 
-                    className="text-sm text-sky-400 hover:text-sky-300 transition-colors"
-                >
-                    Edit API Keys
-                </button>
+                <div className="flex space-x-4">
+                  <button 
+                      onClick={() => setShowApiStatusChecker(!showApiStatusChecker)} 
+                      className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                  >
+                      {showApiStatusChecker ? 'Hide System Check' : 'System Check'}
+                  </button>
+                  <button 
+                      onClick={resetApiKeySetup} 
+                      className="text-sm text-sky-400 hover:text-sky-300 transition-colors"
+                  >
+                      Edit API Keys
+                  </button>
+                </div>
             </div>
+            
+            {showApiStatusChecker && (
+              <div className="bg-slate-800/50 p-6 rounded-xl shadow-2xl border border-slate-700 backdrop-blur-sm mb-8">
+                <ApiStatusChecker apiKeys={apiKeys} />
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="md:col-span-2 bg-slate-800/50 p-6 rounded-xl shadow-2xl border border-slate-700 backdrop-blur-sm">
                 <GeneratorForm onSubmit={handleGenerateContent} isLoading={isLoading} />
