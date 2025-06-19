@@ -4,7 +4,7 @@ import { APP_NAME, MEDICAL_DISCLAIMER, DEFAULT_API_KEYS, API_KEY_STORAGE_KEY, CH
 import { ApiKeyWallet } from './components/ApiKeyWallet';
 import { GeneratorForm } from './components/GeneratorForm';
 import { ResultsDisplay } from './components/ResultsDisplay';
-import { Planner } from './components/Planner';
+import { HelpGuide } from './components/HelpGuide';
 import { generateContentWithGemini, generateImageWithImagen, checkDefaultGeminiEnvKey } from './services/geminiService';
 import { generateMockContent } from './services/mockApiService';
 import { generateFreeImage, generatePlaceholderImage } from './services/freeImageService';
@@ -332,7 +332,7 @@ const AppContent: React.FC = () => {
                 <GeneratorForm onSubmit={handleGenerateContent} isLoading={isLoading} />
               </div>
               <div className="md:col-span-1 bg-slate-800/50 p-6 rounded-xl shadow-2xl border border-slate-700 backdrop-blur-sm">
-                <Planner />
+                <HelpGuide />
               </div>
             </div>
           </>
