@@ -109,11 +109,11 @@ export const ApiKeyWallet: React.FC<ApiKeyWalletProps> = ({ onSave, initialKeys,
           <strong className="text-white">Free Image Generation:</strong> Images can be generated without any API keys using free AI services, though quality may vary. Add Gemini or Unsplash keys for better results.
         </div>
         <div className="pt-2">
-          <Button type="submit" className="w-full bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white font-semibold shadow-lg transition-all duration-200" size="lg">
+          <Button type="submit" className="w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold shadow-lg transition-all duration-200" size="lg">
             🚀 Start Creating Amazing Content
           </Button>
         </div>
-        <div className="p-3 bg-gradient-to-r from-sky-800/20 to-cyan-800/20 border border-sky-700/50 text-sky-300 text-xs rounded-lg flex items-start backdrop-blur-sm">
+        <div className="p-3 bg-slate-800/50 border border-sky-700/50 text-sky-300 text-xs rounded-lg flex items-start backdrop-blur-sm">
             <Info className="h-4 w-4 mr-2 mt-0.5 shrink-0 text-sky-400"/>
             <span>
               🔒 Your API keys are stored securely in your browser's local storage and used directly from your browser to call AI services (BYOK model).

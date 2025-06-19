@@ -133,7 +133,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ contentSet }) =>
 
   return (
     <div className="mt-8">
-      <h3 className="text-3xl font-semibold text-center text-transparent bg-clip-text bg-gradient-to-r from-sky-300 to-teal-300 mb-8">Generated Marketing Suite</h3>
+      <h3 className="text-3xl font-semibold text-center text-sky-300 mb-8">Generated Marketing Suite</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {CHANNEL_OPTIONS.map(opt => {
           const item = contentSet[opt.value];

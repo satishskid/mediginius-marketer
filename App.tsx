@@ -374,7 +374,7 @@ const AppContent: React.FC = () => {
         <div className="flex flex-col items-center space-y-2">
           <p>&copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
           <p className="text-xs text-slate-500">
-            Built with ❤️ by <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 font-semibold">GreyBrain.ai</span>
+            Built with ❤️ by <span className="text-orange-400 font-semibold">GreyBrain.ai</span>
           </p>
         </div>
       </footer>
