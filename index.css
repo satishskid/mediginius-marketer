@@ -30,8 +30,27 @@ body {
   background-clip: text !important;
 }
 
-.bg-gradient-to-r {
+/* Remove the broad gradient override that's causing teal overlays */
+
+/* Ensure text gradients work properly without background overlays */
+.text-transparent.bg-clip-text {
+  color: transparent !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  background-color: transparent !important;
+}
+
+/* Fix specific gradient backgrounds for text only */
+.bg-gradient-to-r.from-sky-400 {
   background: linear-gradient(90deg, #38bdf8, #06b6d4, #14b8a6) !important;
+}
+
+.bg-gradient-to-r.from-orange-400 {
+  background: linear-gradient(90deg, #fb923c, #facc15, #fb923c) !important;
+}
+
+.bg-gradient-to-r.from-sky-300 {
+  background: linear-gradient(90deg, #7dd3fc, #67e8f9, #5eead4) !important;
 }
 
 /* Improve text readability */

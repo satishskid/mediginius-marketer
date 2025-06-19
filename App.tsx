@@ -230,12 +230,12 @@ const AppContent: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 text-slate-100 flex flex-col items-center p-4 selection:bg-sky-500 selection:text-white">
       <header className="w-full max-w-5xl py-6 mb-2 flex justify-between items-center">
         <div>
-          <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-400">
+          <h1 className="text-5xl font-bold text-sky-300">
             {APP_NAME}
           </h1>
           <p className="mt-2 text-slate-400 text-lg">AI-Powered Content for Indian Healthcare Marketers</p>
           <p className="mt-1 text-xs text-slate-400">
-            Powered by <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 font-semibold">GreyBrain.ai</span>
+            Powered by <span className="text-orange-400 font-semibold">GreyBrain.ai</span>
           </p>
         </div>
         <UserButton afterSignOutUrl={window.location.href} />
@@ -244,7 +244,7 @@ const AppContent: React.FC = () => {
       {/* Introductory Section */}
       <div className="w-full max-w-4xl mb-8 p-8 border border-slate-600/30 rounded-2xl backdrop-blur-sm">
         <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-teal-300 mb-4">
+          <h2 className="text-3xl font-bold text-cyan-300 mb-4">
             🩺 Welcome to MediGenius AI
           </h2>
           <p className="text-lg text-white leading-relaxed font-medium">
@@ -392,12 +392,12 @@ const App: React.FC = () => {
       <SignedOut>
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 flex flex-col justify-center items-center p-4">
           <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-400 mb-4">
+            <h1 className="text-5xl font-bold text-sky-300 mb-4">
               MediGenius
             </h1>
             <p className="text-slate-400 text-lg mb-2">AI-Powered Content for Indian Healthcare Marketers</p>
             <p className="text-xs text-slate-400">
-              Powered by <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 font-semibold">GreyBrain.ai</span>
+              Powered by <span className="text-orange-400 font-semibold">GreyBrain.ai</span>
             </p>
           </div>
           <div className="w-full max-w-md">
