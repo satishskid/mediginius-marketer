@@ -11,9 +11,8 @@ import { generateMockContent } from './services/mockApiService';
 import { generateFreeImage, generatePlaceholderImage } from './services/freeImageService';
 import { Spinner } from './components/ui/Spinner';
 import { AlertTriangle, Info } from 'lucide-react';
-import { SignedIn, SignedOut, UserButton, useAuth, SignIn } from "@clerk/clerk-react";
 
-const AppContent: React.FC = () => {
+const App: React.FC = () => {
   const [apiKeys, setApiKeys] = useState<ApiKeys>(DEFAULT_API_KEYS);
   const [isApiKeySetupDone, setIsApiKeySetupDone] = useState<boolean>(false);
   const [isDefaultGeminiEnvKeyAvailable, setIsDefaultGeminiEnvKeyAvailable] = useState<boolean>(false);
@@ -22,11 +21,8 @@ const AppContent: React.FC = () => {
   const [generatedContent, setGeneratedContent] = useState<GeneratedContentSet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { isSignedIn } = useAuth();
 
   useEffect(() => {
-    if (!isSignedIn) return; 
-
     const defaultEnvKey = checkDefaultGeminiEnvKey();
     setIsDefaultGeminiEnvKeyAvailable(!!defaultEnvKey);
 
@@ -35,7 +31,7 @@ const AppContent: React.FC = () => {
 
     if (storedKeys) {
       try {
-        const parsedKeys = JSON.parse(storedKeys) as Partial<ApiKeys>; // Use Partial to avoid issues with missing geminiApiKey initially
+        const parsedKeys = JSON.parse(storedKeys) as Partial<ApiKeys>;
         activeApiKeys = { ...activeApiKeys, ...parsedKeys };
       } catch (e) {
         console.error("Failed to parse stored API keys", e);
@@ -44,7 +40,6 @@ const AppContent: React.FC = () => {
     }
     
     // If a default env key is available and user hasn't provided one, use it.
-    // However, user-provided key in localStorage takes precedence if `activeApiKeys.geminiApiKey` is already set from there.
     if (defaultEnvKey && !activeApiKeys.geminiApiKey) {
       activeApiKeys.geminiApiKey = defaultEnvKey; 
     }
@@ -54,14 +49,11 @@ const AppContent: React.FC = () => {
     if (activeApiKeys.geminiApiKey || activeApiKeys.groqApiKey || activeApiKeys.openRouterApiKey || activeApiKeys.stabilityApiKey) {
         setIsApiKeySetupDone(true);
     } else {
-        setIsApiKeySetupDone(false); // No keys at all, force to wallet
+        setIsApiKeySetupDone(false);
     }
-
-  }, [isSignedIn]);
+  }, []);
 
   const handleApiKeysSave = useCallback((keysFromWallet: ApiKeys) => {
-    if (!isSignedIn) return;
-    
     // keysFromWallet contains what user entered.
     // If user clears Gemini key input, keysFromWallet.geminiApiKey might be empty.
     // In that case, if default env key is available, we can fall back to it.
@@ -73,7 +65,7 @@ const AppContent: React.FC = () => {
 
     const newApiKeys: ApiKeys = {
         ...keysFromWallet,
-        geminiApiKey: finalGeminiKey || null, // Ensure it's null if truly empty
+        geminiApiKey: finalGeminiKey || null,
     };
 
     setApiKeys(newApiKeys);
@@ -82,14 +74,12 @@ const AppContent: React.FC = () => {
     if (newApiKeys.geminiApiKey || newApiKeys.groqApiKey || newApiKeys.openRouterApiKey || newApiKeys.stabilityApiKey) {
         setIsApiKeySetupDone(true);
     } else {
-        setIsApiKeySetupDone(false); // If all keys are cleared, show wallet again
+        setIsApiKeySetupDone(false);
     }
     setError(null); 
-  }, [isDefaultGeminiEnvKeyAvailable, isSignedIn]);
+  }, [isDefaultGeminiEnvKeyAvailable]);
 
   const handleGenerateContent = useCallback(async (params: ContentGenerationParams) => {
-    if (!isSignedIn) return;
-
     // A Gemini key (user-provided or default env) OR other keys must be present.
     if (!apiKeys.geminiApiKey && !apiKeys.groqApiKey && !apiKeys.openRouterApiKey) {
         setError("Crucial API keys are missing. Please provide a Gemini API key in the API Wallet, or Groq/OpenRouter keys for limited functionality.");
@@ -216,7 +206,7 @@ const AppContent: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [apiKeys, isSignedIn]);
+  }, [apiKeys]);
 
   const resetApiKeySetup = () => {
     setIsApiKeySetupDone(false); // This will show the ApiKeyWallet
@@ -238,7 +228,6 @@ const AppContent: React.FC = () => {
             Powered by <span className="text-orange-400 font-semibold">GreyBrain.ai</span>
           </p>
         </div>
-        <UserButton afterSignOutUrl={window.location.href} />
       </header>
 
       {/* Introductory Section */}
@@ -379,47 +368,6 @@ const AppContent: React.FC = () => {
         </div>
       </footer>
     </div>
-  );
-};
-
-
-const App: React.FC = () => {
-  return (
-    <>
-      <SignedIn>
-        <AppContent />
-      </SignedIn>
-      <SignedOut>
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 flex flex-col justify-center items-center p-4">
-          <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold text-sky-300 mb-4">
-              MediGenius
-            </h1>
-            <p className="text-slate-400 text-lg mb-2">AI-Powered Content for Indian Healthcare Marketers</p>
-            <p className="text-xs text-slate-400">
-              Powered by <span className="text-orange-400 font-semibold">GreyBrain.ai</span>
-            </p>
-          </div>
-          <div className="w-full max-w-md">
-            <SignIn 
-              appearance={{
-                elements: {
-                  formButtonPrimary: 'bg-sky-600 hover:bg-sky-500 text-white',
-                  card: 'bg-slate-800/50 border border-slate-700 shadow-2xl',
-                  headerTitle: 'text-slate-100',
-                  headerSubtitle: 'text-slate-400',
-                  socialButtonsBlockButton: 'bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600',
-                  formFieldInput: 'bg-slate-700 border-slate-600 text-slate-100',
-                  formFieldLabel: 'text-slate-300',
-                  identityPreviewText: 'text-slate-300',
-                  formButtonReset: 'text-sky-400 hover:text-sky-300'
-                }
-              }}
-            />
-          </div>
-        </div>
-      </SignedOut>
-    </>
   );
 };
 

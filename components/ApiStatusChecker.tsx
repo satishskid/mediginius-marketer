@@ -235,45 +235,11 @@ export const ApiStatusChecker: React.FC<ApiStatusCheckerProps> = ({ apiKeys }) =
     }
   };
 
-  const checkClerkAuth = async (): Promise<ApiStatus> => {
-    const startTime = Date.now();
-    
-    try {
-      // Check if Clerk is properly initialized
-      const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-      
-      if (!clerkKey || clerkKey.includes('placeholder')) {
-        return {
-          service: 'Clerk Authentication',
-          status: 'error',
-          message: 'Clerk publishable key not configured',
-          responseTime: Date.now() - startTime
-        };
-      }
-
-      // Check if user is authenticated (basic check)
-      return {
-        service: 'Clerk Authentication',
-        status: 'success',
-        message: 'Authentication system working',
-        responseTime: Date.now() - startTime
-      };
-    } catch (error: any) {
-      return {
-        service: 'Clerk Authentication',
-        status: 'error',
-        message: `Authentication error: ${error.message}`,
-        responseTime: Date.now() - startTime
-      };
-    }
-  };
-
   const runSystemCheck = async () => {
     setIsChecking(true);
     setStatusResults([]);
 
     const checks = [
-      checkClerkAuth,
       checkGeminiApi,
       checkFreeImageService,
       checkUnsplashApi,
