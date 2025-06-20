@@ -1,14 +1,14 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ContentGenerationParams, ChannelType } from '../types';
 import { GEMINI_API_MODEL_NAME, IMAGEN_API_MODEL_NAME } from '../constants';
 
 // Store client instances mapped by API key to support multiple user keys if needed,
 // though current app state uses one active key set at a time.
 // For simplicity, we'll re-initialize if the key changes.
-let activeGeminiClient: GoogleGenAI | null = null;
+let activeGeminiClient: GoogleGenerativeAI | null = null;
 let activeApiKey: string | null = null;
 
-const initializeGeminiClient = (apiKey: string): GoogleGenAI | null => {
+const initializeGeminiClient = (apiKey: string): GoogleGenerativeAI | null => {
   if (activeGeminiClient && activeApiKey === apiKey) {
     return activeGeminiClient;
   }
@@ -19,11 +19,11 @@ const initializeGeminiClient = (apiKey: string): GoogleGenAI | null => {
   }
 
   try {
-    activeGeminiClient = new GoogleGenAI({ apiKey }); // Revert to object format
+    activeGeminiClient = new GoogleGenerativeAI(apiKey); // Use string directly for new API
     activeApiKey = apiKey;
     return activeGeminiClient;
   } catch (error) {
-    console.error("Failed to initialize GoogleGenAI client:", error);
+    console.error("Failed to initialize GoogleGenerativeAI client:", error);
     return null;
   }
 };
@@ -218,5 +218,52 @@ export const generateImageWithImagen = async (
       throw new Error("Image generation prompt was blocked due to safety policies. Please revise your prompt.");
     }
     throw new Error(`Imagen API request failed: ${error.message || 'Unknown error'}`);
+  }
+};
+
+// Single channel version for individual content generation
+export const generateSingleChannelWithGemini = async (
+  params: ContentGenerationParams,
+  channel: ChannelType,
+  userProvidedApiKey: string | null
+): Promise<string> => {
+  const apiKeyToUse = userProvidedApiKey || checkDefaultGeminiEnvKey();
+
+  if (!apiKeyToUse) {
+    throw new Error("Gemini API key not available. Please provide it in the API Wallet or ensure GEMINI_API_KEY environment variable is set.");
+  }
+
+  const geminiClient = initializeGeminiClient(apiKeyToUse);
+  if (!geminiClient) {
+    throw new Error("Failed to initialize Gemini AI client with the provided key.");
+  }
+
+  const { specialty, location, targetAudience, topic, tone } = params;
+
+  const contextPrompt = `
+    You are a medical marketing expert creating content for a healthcare professional/organization.
+    
+    Context:
+    - Medical Specialty: ${specialty}
+    - Location: ${location}
+    - Target Audience: ${targetAudience}
+    ${topic ? `- Topic/Theme: ${topic}` : ''}
+    ${tone ? `- Desired Tone: ${tone}` : ''}
+    
+    IMPORTANT: All content must include a medical disclaimer stating that the content is for informational purposes only and not a substitute for professional medical advice.
+  `;
+
+  try {
+    const model = geminiClient.getGenerativeModel({ model: GEMINI_API_MODEL_NAME });
+    const channelPrompt = createChannelSpecificPrompt(channel, contextPrompt);
+    
+    const result = await model.generateContent(channelPrompt);
+    return result.response.text();
+  } catch (error: any) {
+    console.error("Error calling Gemini API:", error);
+    if (error.message && (error.message.includes("API key not valid") || error.message.includes("invalid api key"))) {
+      throw new Error("The provided Gemini API key is not valid. Please check the key in the API Wallet or your environment configuration.");
+    }
+    throw new Error(`Gemini API request failed: ${error.message || 'Unknown error'}`);
   }
 };

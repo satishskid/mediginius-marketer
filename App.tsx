@@ -6,7 +6,7 @@ import { GeneratorForm } from './components/GeneratorForm';
 import { ResultsDisplay } from './components/ResultsDisplay';
 import { HelpGuide } from './components/HelpGuide';
 import { ApiStatusChecker } from './components/ApiStatusChecker';
-import { generateContentWithGemini, generateImageWithImagen, checkDefaultGeminiEnvKey } from './services/geminiService';
+import { generateSingleChannelWithGemini, generateImageWithImagen, checkDefaultGeminiEnvKey } from './services/geminiService';
 import { generateMockContent } from './services/mockApiService';
 import { generateFreeImage, generatePlaceholderImage } from './services/freeImageService';
 import { Spinner } from './components/ui/Spinner';
@@ -120,7 +120,7 @@ const AppContent: React.FC = () => {
                (!apiKeys.groqApiKey && !apiKeys.openRouterApiKey) // Use Gemini if no mock alternatives
               )
           ) {
-            content = await generateContentWithGemini(params, channel, userProvidedGeminiKey);
+            content = await generateSingleChannelWithGemini(params, channel, userProvidedGeminiKey);
           }
           // Fallback to mock/other APIs if Gemini not designated or not available for the channel type
           else if ((apiKeys.groqApiKey || apiKeys.openRouterApiKey) && 
@@ -130,7 +130,7 @@ const AppContent: React.FC = () => {
           // If Gemini is available and preferred but other keys also exist for mockable channels (e.g. ad_copy)
           // ensure Gemini is still used if it's explicitly for that channel.
           else if (userProvidedGeminiKey && (channel === ChannelType.AD_COPY || channel === ChannelType.INSTAGRAM || channel === ChannelType.FACEBOOK || channel === ChannelType.WHATSAPP || channel === ChannelType.GOOGLE_BUSINESS)){
-            content = await generateContentWithGemini(params, channel, userProvidedGeminiKey);
+            content = await generateSingleChannelWithGemini(params, channel, userProvidedGeminiKey);
           }
            else {
             throw new Error(`No suitable API key available for ${channel}. User-provided Gemini Key: ${userProvidedGeminiKey ? 'Yes' : 'No'}.`);
