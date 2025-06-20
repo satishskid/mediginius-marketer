@@ -27,7 +27,7 @@ const App: React.FC = () => {
     setIsDefaultGeminiEnvKeyAvailable(!!defaultEnvKey);
 
     const storedKeys = localStorage.getItem(API_KEY_STORAGE_KEY);
-    let activeApiKeys = { ...DEFAULT_API_KEYS };
+    let activeApiKeys: ApiKeys = { ...DEFAULT_API_KEYS };
 
     if (storedKeys) {
       try {
@@ -41,7 +41,7 @@ const App: React.FC = () => {
     
     // If a default env key is available and user hasn't provided one, use it.
     if (defaultEnvKey && !activeApiKeys.geminiApiKey) {
-      activeApiKeys.geminiApiKey = defaultEnvKey; 
+      activeApiKeys = { ...activeApiKeys, geminiApiKey: defaultEnvKey }; 
     }
     setApiKeys(activeApiKeys);
 
@@ -80,9 +80,9 @@ const App: React.FC = () => {
   }, [isDefaultGeminiEnvKeyAvailable]);
 
   const handleGenerateContent = useCallback(async (params: ContentGenerationParams) => {
-    // A Gemini key (user-provided or default env) OR other keys must be present.
+    // Check if we have any usable API keys
     if (!apiKeys.geminiApiKey && !apiKeys.groqApiKey && !apiKeys.openRouterApiKey) {
-        setError("Crucial API keys are missing. Please provide a Gemini API key in the API Wallet, or Groq/OpenRouter keys for limited functionality.");
+        setError("No API keys available. Please provide a Gemini API key for best results, or Groq/OpenRouter keys for limited functionality.");
         setIsLoading(false);
         return;
     }
@@ -102,35 +102,41 @@ const App: React.FC = () => {
         const userProvidedGeminiKey = apiKeys.geminiApiKey; // Use the key from state
 
         try {
-          // Prioritize Gemini for its specific channels or if it's the only key available
-          if (userProvidedGeminiKey && 
-              (channel === ChannelType.BLOG_IDEA || 
-               channel === ChannelType.VIDEO_SCRIPT || 
-               channel === ChannelType.IMAGE_PROMPT ||
-               (!apiKeys.groqApiKey && !apiKeys.openRouterApiKey) // Use Gemini if no mock alternatives
-              )
-          ) {
+          // Always prioritize Gemini when available for ALL channels
+          if (userProvidedGeminiKey) {
             content = await generateSingleChannelWithGemini(params, channel, userProvidedGeminiKey);
+            results[channel] = { 
+              channel, 
+              content, 
+              error: apiError,
+              metadata: { generatedBy: 'Google Gemini AI' }
+            };
           }
-          // Fallback to mock/other APIs if Gemini not designated or not available for the channel type
-          else if ((apiKeys.groqApiKey || apiKeys.openRouterApiKey) && 
-                   (channel === ChannelType.INSTAGRAM || channel === ChannelType.FACEBOOK || channel === ChannelType.WHATSAPP || channel === ChannelType.GOOGLE_BUSINESS || channel === ChannelType.AD_COPY)) {
+          // Fallback to mock/other APIs only when Gemini is not available
+          else if (apiKeys.groqApiKey || apiKeys.openRouterApiKey) {
             content = await generateMockContent(params, channel, apiKeys.groqApiKey || apiKeys.openRouterApiKey);
+            const apiUsed = apiKeys.groqApiKey ? 'Groq API' : 'OpenRouter API';
+            results[channel] = { 
+              channel, 
+              content, 
+              error: apiError,
+              metadata: { generatedBy: apiUsed }
+            };
           }
-          // If Gemini is available and preferred but other keys also exist for mockable channels (e.g. ad_copy)
-          // ensure Gemini is still used if it's explicitly for that channel.
-          else if (userProvidedGeminiKey && (channel === ChannelType.AD_COPY || channel === ChannelType.INSTAGRAM || channel === ChannelType.FACEBOOK || channel === ChannelType.WHATSAPP || channel === ChannelType.GOOGLE_BUSINESS)){
-            content = await generateSingleChannelWithGemini(params, channel, userProvidedGeminiKey);
-          }
-           else {
-            throw new Error(`No suitable API key available for ${channel}. User-provided Gemini Key: ${userProvidedGeminiKey ? 'Yes' : 'No'}.`);
+          else {
+            throw new Error(`No suitable API key available for ${channel}. Please provide a Gemini API key for best results, or Groq/OpenRouter keys for limited functionality.`);
           }
         } catch (e: any) {
           console.error(`Error generating text content for ${channel}:`, e);
           apiError = e.message || `Failed to generate content for ${channel}.`;
           content = `Could not generate content for ${channel}. ${apiError}`;
+          results[channel] = { 
+            channel, 
+            content, 
+            error: apiError,
+            metadata: { generatedBy: 'Error - No API available' }
+          };
         }
-        results[channel] = { channel, content, error: apiError };
       });
 
       await Promise.all(textGenerationPromises);
@@ -307,6 +313,24 @@ const App: React.FC = () => {
           />
         ) : (
           <>
+            {/* API Status Indicator */}
+            <div className="w-full max-w-3xl mb-4 p-4 bg-slate-800/50 border border-slate-600/30 rounded-lg backdrop-blur-sm">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-slate-300">
+                  <span className="font-medium">Connected APIs:</span>
+                  {apiKeys.geminiApiKey && <span className="ml-2 text-emerald-400">✓ Gemini (Primary)</span>}
+                  {apiKeys.groqApiKey && <span className="ml-2 text-blue-400">✓ Groq</span>}
+                  {apiKeys.openRouterApiKey && <span className="ml-2 text-purple-400">✓ OpenRouter</span>}
+                  {apiKeys.unsplashApiKey && <span className="ml-2 text-orange-400">✓ Unsplash</span>}
+                  {!apiKeys.geminiApiKey && !apiKeys.groqApiKey && !apiKeys.openRouterApiKey && 
+                    <span className="ml-2 text-yellow-400">⚠ No AI APIs connected</span>}
+                </div>
+                <div className="text-xs text-slate-500">
+                  {apiKeys.geminiApiKey ? 'Using Google Gemini for all content' : 'Using fallback services'}
+                </div>
+              </div>
+            </div>
+            
             <div className="flex justify-between items-center">
                 <div className="text-xs text-slate-500">
                   💡 <strong>Tip:</strong> Premium plans coming soon - no API keys needed!
