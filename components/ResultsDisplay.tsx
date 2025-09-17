@@ -4,9 +4,11 @@ import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 import { CHANNEL_OPTIONS, PLATFORM_URLS } from '../constants';
 import { ClipboardCopy, AlertCircle, Image as ImageIcon, Video, FileText, Info, ExternalLink } from 'lucide-react';
+import { RetryPanel } from './ui/RetryPanel';
 
 interface ResultsDisplayProps {
   contentSet: GeneratedContentSet;
+  onRetry?: (platform: string) => Promise<void>;
 }
 
 const ResultItem: React.FC<{ 
@@ -15,9 +17,21 @@ const ResultItem: React.FC<{
   content: string; 
   error?: string; 
   metadata?: { generatedBy?: string; [key: string]: any };
-  onCopy: (textToCopy: string) => void 
-}> = ({ channelType, title, content, error, metadata, onCopy }) => {
+  onCopy: (textToCopy: string) => void;
+  onRetry?: (platform: string) => Promise<void>;
+}> = ({ channelType, title, content, error, metadata, onCopy, onRetry }) => {
+  const [isRetrying, setIsRetrying] = useState(false);
   
+  const handleRetry = async () => {
+    if (!onRetry) return;
+    setIsRetrying(true);
+    try {
+      await onRetry(channelType.toString().toLowerCase());
+    } finally {
+      setIsRetrying(false);
+    }
+  };
+
   const isImageChannel = channelType === ChannelType.GENERATED_IMAGE;
   const isBlogIdeaChannel = channelType === ChannelType.BLOG_IDEA;
   const platformInfo = PLATFORM_URLS[channelType];
@@ -91,6 +105,14 @@ const ResultItem: React.FC<{
           <span className="truncate">{error.length > 150 ? error.substring(0,150) + "..." : error}</span>
         </div>
       )}
+      {error && onRetry && (
+        <RetryPanel
+          error={error}
+          onRetry={handleRetry}
+          platformName={title}
+          isRetrying={isRetrying}
+        />
+      )}
       {!error && isImageChannel ? (
         <div className="mt-2 flex-grow flex flex-col items-center justify-center bg-slate-700/30 p-2 rounded-md overflow-hidden">
           <img 
@@ -130,8 +152,17 @@ const ResultItem: React.FC<{
   );
 };
 
-export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ contentSet }) => {
+export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ contentSet, onRetry }) => {
   const [showCopiedNotification, setShowCopiedNotification] = useState<boolean>(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  // Add animation when content is loaded
+  React.useEffect(() => {
+    if (contentSet) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => setIsVisible(true), 100);
+    }
+  }, [contentSet]);
 
   const handleCopy = (textToCopy: string) => {
     if(!textToCopy) return;
@@ -145,17 +176,14 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ contentSet }) =>
   };
 
   return (
-    <div className="mt-8">
+    <div className={`mt-8 transition-all duration-500 ease-in-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
       <h3 className="text-3xl font-semibold text-center text-sky-300 mb-8">Generated Marketing Suite</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {CHANNEL_OPTIONS.map(opt => {
           const item = contentSet[opt.value];
           
-          if (!item && opt.value !== ChannelType.GENERATED_IMAGE) return null; 
-          if (!item && opt.value === ChannelType.GENERATED_IMAGE && (!contentSet[ChannelType.IMAGE_PROMPT] || contentSet[ChannelType.IMAGE_PROMPT].error)) {
-            return null;
-          }
-           if (!item && opt.value === ChannelType.GENERATED_IMAGE) {
+          if (!item && opt.value !== ChannelType.GENERATED_IMAGE) return null;
+          if (!item && opt.value === ChannelType.GENERATED_IMAGE) {
             // If image generation was skipped or failed, don't render its card unless there's an error to show
             if (contentSet[ChannelType.GENERATED_IMAGE]?.error) {
                  // allow rendering if there's an error to display for GENERATED_IMAGE
@@ -164,7 +192,6 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ contentSet }) =>
             }
            }
            if (!item) return null;
-
 
           return (
             <ResultItem 
@@ -175,11 +202,13 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ contentSet }) =>
               error={item.error}
               metadata={item.metadata}
               onCopy={handleCopy}
+              onRetry={onRetry}
             />
           );
         })}
       </div>
-       {showCopiedNotification && (
+      
+      {showCopiedNotification && (
         <div className="fixed bottom-5 right-5 bg-green-600 text-white py-2.5 px-5 rounded-lg shadow-xl transition-all duration-300 ease-in-out z-50 flex items-center">
           <ClipboardCopy size={18} className="mr-2"/> Copied to clipboard!
         </div>

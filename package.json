@@ -4,15 +4,20 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 5373",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --port 5373"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.47.0",
     "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.57.4",
+    "@types/crypto-js": "^4.2.2",
+    "crypto-js": "^4.2.0",
     "lucide-react": "^0.515.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-router-dom": "^7.9.1",
     "swr": "^2"
   },
   "devDependencies": {

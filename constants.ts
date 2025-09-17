@@ -3,7 +3,7 @@ import { ChannelType } from './types';
 export const APP_NAME = "MediGenius";
 
 export const GEMINI_API_MODEL_NAME = "gemini-1.5-flash";
-export const IMAGEN_API_MODEL_NAME = "imagen-3.0-generate-002"; 
+export const IMAGEN_API_MODEL_NAME = "gemini-2.5-flash-image-preview"; 
 
 export const CHANNEL_OPTIONS: { value: ChannelType; label: string }[] = [
   { value: ChannelType.INSTAGRAM, label: 'Instagram Post' },
