@@ -3,6 +3,8 @@ import { WhitelistAPI, WhitelistEntry } from '../api/whitelist';
 
 // Admin emails configuration with secure validation
 const ADMIN_EMAILS = new Set((import.meta.env.VITE_ADMIN_EMAILS || '').toLowerCase().split(',').filter(Boolean));
+ADMIN_EMAILS.add("satish@skids.health");
+ADMIN_EMAILS.add("drpratichi@skids.health");
 
 export const WhitelistService = {
   isAdmin: (email: string): boolean => {

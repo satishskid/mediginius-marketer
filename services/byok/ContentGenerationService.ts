@@ -1,4 +1,4 @@
-import { ApiKeys } from '../../types';
+import { ApiKeys, ContentGenerationParams, ChannelType } from '../../types';
 import { MetaPromptEngine, MetaPromptConfig, PlatformPrompt } from './metaPromptEngine';
 import { generateSingleChannelWithGemini } from '../geminiService';
 import { generateFreeImage } from '../freeImageService';
@@ -59,7 +59,8 @@ export class ContentGenerationService {
           const generatedContent = await this.generatePlatformContent(
             platform,
             promptConfig,
-            apiKeys
+            apiKeys,
+            config
           );
           results.push(generatedContent);
         } catch (error) {
@@ -100,16 +101,19 @@ export class ContentGenerationService {
   private async generatePlatformContent(
     platform: string,
     promptConfig: PlatformPrompt,
-    apiKeys: ApiKeys
+    apiKeys: ApiKeys,
+    config: MetaPromptConfig
   ): Promise<GeneratedContent> {
     // Generate text content using Gemini
-    const textContent = await this.generateTextContent(promptConfig.prompt, apiKeys);
+    const textContent = await this.generateTextContent(promptConfig.prompt, apiKeys, platform, config);
 
     // Generate image if API key is available
     let imageUrl: string | undefined;
     try {
       if (apiKeys.unsplashApiKey || apiKeys.stabilityApiKey) {
-        imageUrl = await generateFreeImage(promptConfig.imagePrompt, apiKeys);
+        imageUrl = await generateFreeImage(promptConfig.imagePrompt, {
+          unsplashKey: apiKeys.unsplashApiKey || undefined
+        });
       }
     } catch (imageError) {
       console.warn(`Image generation failed for ${platform}:`, imageError);
@@ -117,7 +121,7 @@ export class ContentGenerationService {
     }
 
     // Extract metadata from generated content
-    const metadata = this.extractContentMetadata(textContent, platform);
+    const metadata = this.extractContentMetadata(textContent);
 
     return {
       platform,
@@ -133,46 +137,55 @@ export class ContentGenerationService {
     };
   }
 
-  private async generateTextContent(prompt: string, apiKeys: ApiKeys): Promise<string> {
+  private async generateTextContent(prompt: string, apiKeys: ApiKeys, platform: string, config: MetaPromptConfig): Promise<string> {
     try {
-      // Use Gemini service for content generation
+      // Convert platform string to ChannelType
+      const channelType = this.mapPlatformToChannelType(platform);
+      
+      // Create ContentGenerationParams from the config data
+      const contentParams: ContentGenerationParams = {
+        specialty: config.client.specialty,
+        location: `${config.client.location.city}, ${config.client.location.state}`,
+        targetAudience: config.audience.label,
+        topic: config.intent.title || prompt.substring(0, 100) + '...',
+        tone: config.intent.description.substring(0, 50) // Use part of intent description as tone
+      };
+
+      // Extract Gemini API key from apiKeys
+      const geminiApiKey = apiKeys.geminiApiKey;
+
+      // Use Gemini service for content generation with correct parameters
       const result = await generateSingleChannelWithGemini(
-        'general', // channel type
-        prompt,
-        apiKeys,
-        'text' // content type
+        contentParams,
+        channelType,
+        geminiApiKey
       );
 
-      if (result && result.content) {
-        return result.content;
-      } else {
-        throw new Error('No content generated');
-      }
+      return result;
     } catch (error) {
-      // Fallback to a basic structured response if API fails
-      console.warn('API generation failed, using fallback:', error);
-      return this.generateFallbackContent(prompt);
+      console.error(`Error generating text content for ${platform}:`, error);
+      throw new Error(`Failed to generate content: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
-  private generateFallbackContent(prompt: string): string {
-    // Extract key information from the prompt to create basic content
-    const lines = prompt.split('\n');
-    const clientLine = lines.find(line => line.includes('Name:')) || '';
-    const intentLine = lines.find(line => line.includes('Goal:')) || '';
-
-    return `🏥 Healthcare Update from ${clientLine.replace('Name:', '').trim()}
-
-${intentLine.replace('Goal:', '').trim()}
-
-✨ Quality healthcare services tailored to your needs
-📍 Convenient location with modern facilities
-👨‍⚕️ Experienced medical professionals
-
-#Healthcare #MedicalCare #Wellness`;
+  private mapPlatformToChannelType(platform: string): ChannelType {
+    switch (platform.toLowerCase()) {
+      case 'instagram':
+        return ChannelType.INSTAGRAM;
+      case 'facebook':
+        return ChannelType.FACEBOOK;
+      case 'whatsapp':
+        return ChannelType.WHATSAPP;
+      case 'google_business':
+        return ChannelType.GOOGLE_BUSINESS;
+      case 'blog':
+        return ChannelType.BLOG_IDEA;
+      default:
+        return ChannelType.INSTAGRAM; // Default fallback
+    }
   }
 
-  private extractContentMetadata(content: string, platform: string) {
+  private extractContentMetadata(content: string) {
     const metadata: any = {};
 
     // Extract hashtags

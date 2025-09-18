@@ -3,11 +3,11 @@ import { WhitelistService, WhitelistEntry } from '../services/whitelistService';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
-import { useAuth } from '@clerk/clerk-react';
 import { Shield, UserPlus, XCircle, Loader2 } from 'lucide-react';
 
+// Placeholder for Supabase Auth logic
+
 export const WhitelistManager: React.FC = () => {
-  const { user } = useAuth();
   const [newEntry, setNewEntry] = useState('');
   const [whitelist, setWhitelist] = useState<WhitelistEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -37,9 +37,7 @@ export const WhitelistManager: React.FC = () => {
     return () => { mounted = false; };
   }, []);
 
-  if (!user || !WhitelistService.isAdmin(user.primaryEmailAddress?.emailAddress || '')) {
-    return null;
-  }
+  // Placeholder for Supabase Auth logic
 
   const validateEntry = (entry: string): boolean => {
     // Domain validation (e.g., example.com)
@@ -63,7 +61,7 @@ export const WhitelistManager: React.FC = () => {
       const isEmail = newEntry.includes('@');
       const entry: Omit<WhitelistEntry, 'id' | 'addedAt' | 'active'> = {
         [isEmail ? 'email' : 'domain']: newEntry.toLowerCase(),
-        addedBy: user.primaryEmailAddress?.emailAddress || 'unknown'
+        addedBy: 'placeholder@example.com' // Placeholder for Supabase Auth logic
       };
 
       const added = await WhitelistService.addToWhitelist(entry);

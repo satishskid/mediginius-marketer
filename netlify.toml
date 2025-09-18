@@ -5,6 +5,7 @@
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "9"
+  # Remove Clerk key if not needed
 
 [[redirects]]
   from = "/*"
@@ -35,5 +36,16 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https: wss:; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; object-src 'none';"
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval';
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data:;
+      frame-src 'self';
+      connect-src 'self' https://ywtnlpegjnfbfdhoqhfn.supabase.co;
+      font-src 'self' data: https://r2cdn.perplexity.ai;
+      object-src 'none';
+      media-src 'self';
+      worker-src 'self' blob:;
+    """
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"

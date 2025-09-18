@@ -5,11 +5,12 @@ import { ApiKeyWallet } from './components/ApiKeyWallet';
 import { GeneratorForm } from './components/GeneratorForm';
 import { ResultsDisplay } from './components/ResultsDisplay';
 import { Planner } from './components/Planner';
-import { generateContentWithGemini, generateImageWithImagen, checkDefaultGeminiEnvKey } from './services/geminiService';
+import { generateSingleChannelWithGemini, generateImageWithImagen, checkDefaultGeminiEnvKey } from './services/geminiService';
 import { generateMockContent } from './services/mockApiService';
 import { Spinner } from './components/ui/Spinner';
 import { AlertTriangle, Info } from 'lucide-react';
-import { SignedIn, SignedOut, UserButton, useAuth, SignIn } from "@clerk/clerk-react";
+import { GuidedBYOKApp } from './components/guided/GuidedBYOKApp';
+import { ContentGenerationService } from './services/byok/ContentGenerationService';
 
 const AppContent: React.FC = () => {
   const [apiKeys, setApiKeys] = useState<ApiKeys>(DEFAULT_API_KEYS);
@@ -19,16 +20,14 @@ const AppContent: React.FC = () => {
   const [generatedContent, setGeneratedContent] = useState<GeneratedContentSet | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { isSignedIn } = useAuth();
+  const [isGuidedMode, setIsGuidedMode] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!isSignedIn) return; 
-
     const defaultEnvKey = checkDefaultGeminiEnvKey();
     setIsDefaultGeminiEnvKeyAvailable(!!defaultEnvKey);
 
     const storedKeys = localStorage.getItem(API_KEY_STORAGE_KEY);
-    let activeApiKeys = { ...DEFAULT_API_KEYS };
+    let activeApiKeys: ApiKeys = { ...DEFAULT_API_KEYS };
 
     if (storedKeys) {
       try {
@@ -54,11 +53,9 @@ const AppContent: React.FC = () => {
         setIsApiKeySetupDone(false); // No keys at all, force to wallet
     }
 
-  }, [isSignedIn]);
+  }, []);
 
   const handleApiKeysSave = useCallback((keysFromWallet: ApiKeys) => {
-    if (!isSignedIn) return;
-    
     // keysFromWallet contains what user entered.
     // If user clears Gemini key input, keysFromWallet.geminiApiKey might be empty.
     // In that case, if default env key is available, we can fall back to it.
@@ -82,11 +79,9 @@ const AppContent: React.FC = () => {
         setIsApiKeySetupDone(false); // If all keys are cleared, show wallet again
     }
     setError(null); 
-  }, [isDefaultGeminiEnvKeyAvailable, isSignedIn]);
+  }, [isDefaultGeminiEnvKeyAvailable]);
 
   const handleGenerateContent = useCallback(async (params: ContentGenerationParams) => {
-    if (!isSignedIn) return;
-
     // A Gemini key (user-provided or default env) OR other keys must be present.
     if (!apiKeys.geminiApiKey && !apiKeys.groqApiKey && !apiKeys.openRouterApiKey) {
         setError("Crucial API keys are missing. Please provide a Gemini API key in the API Wallet, or Groq/OpenRouter keys for limited functionality.");
@@ -117,7 +112,7 @@ const AppContent: React.FC = () => {
                (!apiKeys.groqApiKey && !apiKeys.openRouterApiKey) // Use Gemini if no mock alternatives
               )
           ) {
-            content = await generateContentWithGemini(params, channel, userProvidedGeminiKey);
+            content = await generateSingleChannelWithGemini(params, channel, userProvidedGeminiKey);
           }
           // Fallback to mock/other APIs if Gemini not designated or not available for the channel type
           else if ((apiKeys.groqApiKey || apiKeys.openRouterApiKey) && 
@@ -127,7 +122,7 @@ const AppContent: React.FC = () => {
           // If Gemini is available and preferred but other keys also exist for mockable channels (e.g. ad_copy)
           // ensure Gemini is still used if it's explicitly for that channel.
           else if (userProvidedGeminiKey && (channel === ChannelType.AD_COPY || channel === ChannelType.INSTAGRAM || channel === ChannelType.FACEBOOK || channel === ChannelType.WHATSAPP || channel === ChannelType.GOOGLE_BUSINESS)){
-            content = await generateContentWithGemini(params, channel, userProvidedGeminiKey);
+            content = await generateSingleChannelWithGemini(params, channel, userProvidedGeminiKey);
           }
            else {
             throw new Error(`No suitable API key available for ${channel}. User-provided Gemini Key: ${userProvidedGeminiKey ? 'Yes' : 'No'}.`);
@@ -170,7 +165,56 @@ const AppContent: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [apiKeys, isSignedIn]);
+  }, [apiKeys]);
+
+  const handleCampaignComplete = useCallback(async (campaign: any) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Create ContentGenerationParams from the campaign data
+      const contentParams: ContentGenerationParams = {
+        specialty: campaign.client.specialty,
+        location: `${campaign.client.location.city}, ${campaign.client.location.state}`,
+        targetAudience: campaign.audience.label,
+        topic: campaign.intent.title,
+        tone: campaign.intent.description.substring(0, 50)
+      };
+
+      // Use ContentGenerationService to generate content
+      const contentService = new ContentGenerationService();
+      const result = await contentService.generateCampaignContent(
+        {
+          client: campaign.client,
+          audience: campaign.audience,
+          intent: campaign.intent
+        },
+        apiKeys,
+        ['instagram', 'facebook', 'whatsapp'] // Default platforms
+      );
+
+      if (result.success && result.content.length > 0) {
+        // Convert the result to GeneratedContentSet format
+        const generatedResults: GeneratedContentSet = {};
+        result.content.forEach(item => {
+          generatedResults[item.platform] = {
+            channel: item.platform as ChannelType,
+            content: item.content,
+            error: undefined,
+            metadata: { generatedBy: 'guided' }
+          };
+        });
+        setGeneratedContent(generatedResults);
+      } else {
+        setError(result.errors.join(', ') || 'Failed to generate content');
+      }
+    } catch (err: any) {
+      console.error('Campaign content generation failed:', err);
+      setError(err.message || 'Failed to generate campaign content');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [apiKeys]);
 
   const resetApiKeySetup = () => {
     setIsApiKeySetupDone(false); // This will show the ApiKeyWallet
@@ -192,7 +236,6 @@ const AppContent: React.FC = () => {
             Powered by <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 font-semibold">GreyBrain.ai</span>
           </p>
         </div>
-        <UserButton afterSignOutUrl={window.location.href} />
       </header>
 
       {/* Introductory Section */}
@@ -285,7 +328,40 @@ const AppContent: React.FC = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="md:col-span-2 bg-slate-800/50 p-6 rounded-xl shadow-2xl border border-slate-700 backdrop-blur-sm">
-                <GeneratorForm onSubmit={handleGenerateContent} isLoading={isLoading} />
+                {/* Mode Toggle */}
+                <div className="flex justify-center mb-6">
+                  <div className="bg-slate-700/50 p-1 rounded-lg flex">
+                    <button
+                      onClick={() => setIsGuidedMode(false)}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                        !isGuidedMode
+                          ? 'bg-sky-500 text-white shadow-lg'
+                          : 'text-slate-300 hover:text-white hover:bg-slate-600/50'
+                      }`}
+                    >
+                      Quick Generate
+                    </button>
+                    <button
+                      onClick={() => setIsGuidedMode(true)}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                        isGuidedMode
+                          ? 'bg-emerald-500 text-white shadow-lg'
+                          : 'text-slate-300 hover:text-white hover:bg-slate-600/50'
+                      }`}
+                    >
+                      Guided Campaign
+                    </button>
+                  </div>
+                </div>
+
+                {isGuidedMode ? (
+                  <GuidedBYOKApp
+                    onCampaignComplete={handleCampaignComplete}
+                    onBackToMain={() => setIsGuidedMode(false)}
+                  />
+                ) : (
+                  <GeneratorForm onSubmit={handleGenerateContent} isLoading={isLoading} />
+                )}
               </div>
               <div className="md:col-span-1 bg-slate-800/50 p-6 rounded-xl shadow-2xl border border-slate-700 backdrop-blur-sm">
                 <Planner />
@@ -326,39 +402,8 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <>
-      <SignedIn>
-        <AppContent />
-      </SignedIn>
-      <SignedOut>
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 flex flex-col justify-center items-center p-4">
-          <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-400 mb-4">
-              MediGenius
-            </h1>
-            <p className="text-slate-400 text-lg mb-2">AI-Powered Content for Indian Healthcare Marketers</p>
-            <p className="text-xs text-slate-400">
-              Powered by <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 font-semibold">GreyBrain.ai</span>
-            </p>
-          </div>
-          <div className="w-full max-w-md">
-            <SignIn 
-              appearance={{
-                elements: {
-                  formButtonPrimary: 'bg-sky-600 hover:bg-sky-500 text-white',
-                  card: 'bg-slate-800/50 border border-slate-700 shadow-2xl',
-                  headerTitle: 'text-slate-100',
-                  headerSubtitle: 'text-slate-400',
-                  socialButtonsBlockButton: 'bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600',
-                  formFieldInput: 'bg-slate-700 border-slate-600 text-slate-100',
-                  formFieldLabel: 'text-slate-300',
-                  identityPreviewText: 'text-slate-300',
-                  formButtonReset: 'text-sky-400 hover:text-sky-300'
-                }
-              }}
-            />
-          </div>
-        </div>
-      </SignedOut>
+      {/* You will add Supabase Auth logic here later */}
+      <AppContent />
     </>
   );
 };

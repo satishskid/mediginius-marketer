@@ -1,6 +1,6 @@
-import React from 'react';
-import { useAuth } from '@clerk/clerk-react';
-import { Navigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../services/supabaseClient';
 import { WhitelistService } from '../../services/whitelistService';
 import { Card } from '../ui/Card';
 import { AlertTriangle } from 'lucide-react';
@@ -10,13 +10,46 @@ interface RouteGuardProps {
 }
 
 export const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
-  const { isSignedIn, user } = useAuth();
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  if (!isSignedIn || !user) {
-    return <Navigate to="/login" replace />;
+  useEffect(() => {
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+      setLoading(false);
+      if (!data.session) {
+        navigate('/login', { replace: true });
+      }
+    };
+    getSession();
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (!session) {
+        navigate('/login', { replace: true });
+      }
+    });
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen text-slate-400">Loading...</div>;
+  }
+  if (!session) {
+    return null;
   }
 
-  const email = user.primaryEmailAddress?.emailAddress;
+  // Allow SSO callback paths to pass through without redirect
+  const isSSOCallback = window.location.pathname.includes('/login/sso-callback');
+  if (isSSOCallback) {
+    return null; // Let Clerk handle the callback
+  }
+
+  // Check for email verification
+  const email = session.user.email;
   if (!email) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 flex flex-col justify-center items-center p-4">
@@ -37,6 +70,7 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
     );
   }
 
+  // Check whitelist
   const isWhitelisted = WhitelistService.isWhitelisted(email);
   if (!isWhitelisted) {
     return (

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useUser, useClerk, useUsers } from '@clerk/clerk-react';
 import { Shield, UserPlus, Users, Key } from 'lucide-react';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
@@ -32,25 +31,11 @@ const UserRow: React.FC<UserRowProps> = ({ userId, email, role, onRoleChange }) 
 );
 
 export const AdminPanel: React.FC = () => {
-  const { user: currentUser } = useUser();
-  const { users } = useUsers();
-  const { setActive } = useClerk();
+  // Placeholder for Supabase Auth logic
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      // Get the user from the users list
-      const user = users?.find(u => u.id === userId);
-      if (!user) return;
-
-      // Update the user's public metadata with their new role
-      await user.update({
-        publicMetadata: { role: newRole },
-      });
-
-      // If changing own role, trigger a session update
-      if (userId === currentUser?.id) {
-        await setActive({ session: currentUser.session });
-      }
+      // Placeholder for Supabase Auth logic
     } catch (error) {
       console.error('Failed to update user role:', error);
     }

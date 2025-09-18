@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useUser } from "@clerk/clerk-react";
 import { ApiKeys } from '../../types';
 
 interface ApiKeySetupProps {
@@ -11,7 +10,7 @@ export const ApiKeySetup: React.FC<ApiKeySetupProps> = ({
   onKeysSubmitted,
   existingKeys
 }) => {
-  const { user } = useUser();
+  // Placeholder for Supabase Auth logic
   const [apiKeys, setApiKeys] = useState<ApiKeys>(existingKeys || {
     geminiApiKey: '',
     groqApiKey: '',

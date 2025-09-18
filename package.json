@@ -4,12 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5373",
+    "dev": "vite --port 5100",
     "build": "vite build",
     "preview": "vite preview --port 5373"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.47.0",
     "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.57.4",
     "@types/crypto-js": "^4.2.2",
